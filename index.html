@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tensordrift~</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.159.0/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #0f0f17;
+            --text-color: #e0e0ff;
+            --accent-color: #ff69b4;
+            --secondary-color: #6b46c1;
+            --tertiary-color: #38b2ac;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+        }
+
+        #gradient-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(45deg, var(--accent-color), var(--tertiary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--tertiary-color);
+            opacity: 0.8;
+        }
+
+        .section {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: var(--accent-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+        }
+
+        .projects {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            padding: 1.5rem;
+            background: rgba(107, 70, 193, 0.1);
+            border-radius: 8px;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            margin: 0.2rem;
+            background: var(--secondary-color);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            opacity: 0.7;
+        }
+
+        a {
+            color: var(--tertiary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-color);
+        }
+
+        .status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .papers {
+            list-style: none;
+            padding: 0;
+        }
+
+        .papers li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .papers li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gradient-canvas"></canvas>
+    <div class="container">
+        <header>
+            <h1>tensordrift</h1>
+            <p class="subtitle">exploring the loss landscape, one epoch at a time</p>
+            <div class="status">current status: lost in attention weights</div>
+        </header>
+
+        <section class="section">
+            <h2>~/about</h2>
+            <p>indie ml researcher. recovering pytorch enthusiast. interested in attention mechanisms, sparse transformers, and the intersection of anime and AI. previously: big tech, now based & building in the open.</p>
+            <div>
+                <span class="tag">ML</span>
+                <span class="tag">Open Source</span>
+                <span class="tag">Transformers</span>
+                <span class="tag">Anime</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>~/projects</h2>
+            <div class="projects">
+                <div class="project-card">
+                    <h3>attention-is-all-you-need-but-sparse</h3>
+                    <p>Experiments with sparse attention patterns and their effects on transformer architectures. Currently exploring efficient implementations and visualization techniques.</p>
+                    <div>
+                        <span class="tag">WIP</span>
+                        <span class="tag">PyTorch</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>loss-landscape-visualizer</h3>
+                    <p>Tools for visualizing high-dimensional loss landscapes in 3D. Because sometimes you need to see where your model is going (or where it's stuck).</p>
+                    <div>
+                        <span class="tag">Tools</span>
+                        <span class="tag">Visualization</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>~/reading</h2>
+            <ul class="papers">
+                <li>Attention Is All You Need (reading it again because why not)</li>
+                <li>Scaling Laws for Neural Language Models</li>
+                <li>Flash Attention: Fast and Memory-Efficient Exact Attention</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>find me on <a href="#">X</a> | built with matcha and gradient descent</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple gradient animation with Three.js
+        const canvas = document.getElementById('gradient-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                u_time: { value: 0 },
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float u_time;
+                varying vec2 vUv;
+                
+                void main() {
+                    vec2 uv = vUv;
+                    float t = u_time * 0.2;
+                    
+                    vec3 color1 = vec3(0.42, 0.27, 0.76);
+                    vec3 color2 = vec3(1.0, 0.41, 0.71);
+                    vec3 color3 = vec3(0.22, 0.70, 0.67);
+                    
+                    float noise = sin(uv.x * 10.0 + t) * sin(uv.y * 10.0 + t) * 0.5 + 0.5;
+                    
+                    vec3 color = mix(
+                        mix(color1, color2, uv.x + sin(t) * 0.5),
+                        color3,
+                        noise
+                    );
+                    
+                    gl_FragColor = vec4(color, 0.5);
+                }
+            `,
+            transparent: true
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        function animate(time) {
+            material.uniforms.u_time.value = time * 0.001;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        function resize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animate(0);
+    </script>
+</body>
+</html>
